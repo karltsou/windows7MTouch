@@ -39,11 +39,11 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // 
             // MTScratchpadWMTouchForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(944, 504);
+            this.ClientSize = new System.Drawing.Size(944, 465);
             this.Name = "MTScratchpadWMTouchForm";
-            this.Text = "MTScratchpadWMTouch";
+            this.Text = "ATMEL Touch Tester";
             this.ResumeLayout(false);
 
         }

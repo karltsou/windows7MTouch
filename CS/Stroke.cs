@@ -5,6 +5,11 @@
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+// Atmel Corporation.
+//
+// Modifier : karl tsou
+// Email    : karl.tsou@atmel.com
+//
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -81,7 +86,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         private Color color;                    // the color of the stroke
         private int id;                         // stroke ID
 
-        private const float penWidth = 3.0f;    // pen width for drawing the stroke
+        private const float penWidth = 150.0f;    // pen width for drawing the stroke
     }
 
     // CollectionOfStrokes object represents a collection of the strokes.
