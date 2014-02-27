@@ -35,13 +35,26 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         /// </summary>
         private void InitializeComponent()
         {
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(759, 57);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(88, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Clean Screen";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // MTScratchpadWMTouchForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(944, 465);
+            this.ClientSize = new System.Drawing.Size(944, 504);
+            this.Controls.Add(this.button1);
+            this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Name = "MTScratchpadWMTouchForm";
             this.Text = "ATMEL Touch Tester";
             this.ResumeLayout(false);
@@ -49,6 +62,8 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         }
 
         #endregion
+
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -134,6 +134,23 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         private TouchColor touchColor;                  // Color generator
         private CollectionOfStrokes FinishedStrokes;    // Collection of finished strokes
         private CollectionOfStrokes ActiveStrokes;      // Collection of active strokes, currently being drawn by the user
+
+        // Clean Drawing Surface
+        // in:
+        //      sender      object that has sent the event
+        //      e           event arguments
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Clears the entire drawing surface
+            // and fills it with the specified background color.
+            Graphics g = this.CreateGraphics();
+            g.Clear(Color.White);
+
+            // Remove strokes both finish and active
+            FinishedStrokes.Clear();
+            ActiveStrokes.Clear();
+        }
+
     }
 
     // Color generator: assigns a color to the new stroke.
