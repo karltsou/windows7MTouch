@@ -80,8 +80,14 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             ActiveStrokes.Add(newStroke);
 
             // Log xy
+            label5.Text = "TOUCH DOWN";
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
+
+            FinishedStrokes.topLeftX = e.LocationX;
+            FinishedStrokes.topLeftY = e.LocationY;
+            FinishedStrokes.topRightX = e.LocationX;
+            FinishedStrokes.topRightY = e.LocationY;
         }
 
         // Touch up event handler.
@@ -98,6 +104,12 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
             // Add this stroke to the collection of finished strokes.
             FinishedStrokes.Add(stroke);
+
+            label5.Text = "TOUCH UP";
+            FinishedStrokes.bottomLeftX = e.LocationX;
+            FinishedStrokes.bottomLeftY = e.LocationY;
+            FinishedStrokes.bottomRightX = e.LocationX;
+            FinishedStrokes.bottomRightY = e.LocationY;
 
             // Request full redraw.
             Invalidate();
@@ -117,13 +129,14 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // Add contact point to the stroke
             stroke.Add(new Point(e.LocationX, e.LocationY));
 
+            // Log xy
+            label5.Text = "TOUCH MOVING";
+            richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
+            richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
+
             // Partial redraw: only the last line segment
             Graphics g = this.CreateGraphics();
             stroke.DrawLast(g);
-
-            // Log xy
-            richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
-            richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
         }
 
         // OnPaint event handler.
@@ -134,8 +147,40 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         {
             // Full redraw: draw complete collection of finished strokes and
             // also all the strokes that are currently in drawing.
-            FinishedStrokes.Draw(e.Graphics);
-            ActiveStrokes.Draw(e.Graphics);
+            //FinishedStrokes.Draw(e.Graphics);
+            //ActiveStrokes.Draw(e.Graphics);
+
+            if (FinishedStrokes.bottomRightX - FinishedStrokes.topLeftX >= 1300) {
+
+                if (FinishedStrokes.bottomRightY - FinishedStrokes.topLeftY >= 630)
+                {
+                    label5.Text = "TOUCH PASSED";
+                }
+                else
+                {
+                    label5.Text = "TOUCH FAILED";
+                }
+
+            }
+
+            else if (FinishedStrokes.topRightX - FinishedStrokes.bottomLeftX >= 1300) {
+
+                if (FinishedStrokes.bottomLeftY - FinishedStrokes.topRightY >= 630)
+                {
+                    label5.Text = "TOUCH PASSED";
+                }
+                else
+                {
+                    label5.Text = "TOUCH FAILED";
+                }
+
+            }
+
+            else
+            {
+                label5.Text = "TOUCH FAILED";
+            }
+
         }
 
         // Attributes
@@ -177,27 +222,27 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
         private void label1_Click(object sender, EventArgs e)
         {
-            richTextBox1.AppendText("TOP,LEFT\n");
+            //richTextBox1.AppendText("TOP,LEFT\n");
         }
 
         private void label2_Click(object sender, EventArgs e)
         {
-            richTextBox1.AppendText("TOP,RIGHT\n");
+            //richTextBox1.AppendText("TOP,RIGHT\n");
         }
 
         private void label3_Click(object sender, EventArgs e)
         {
-            richTextBox1.AppendText("BOTTOM,LEFT\n");
+            //richTextBox1.AppendText("BOTTOM,LEFT\n");
         }
 
         private void label4_Click(object sender, EventArgs e)
         {
-            richTextBox1.AppendText("BOTTOM,RIGHT\n");
+            //richTextBox1.AppendText("BOTTOM,RIGHT\n");
         }
 
         private void label5_Click(object sender, EventArgs e)
         {
-            richTextBox1.AppendText("CENTER\n");
+            //richTextBox1.AppendText("CENTER\n");
         }
 
     }
@@ -220,7 +265,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             if (primary)
             {
                 // The primary contact is drawn in black.
-                return Color.Black;
+                return Color.LawnGreen;
             }
             else
             {
@@ -238,7 +283,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         static private Color[] secondaryColors =    // Secondary colors
         {
             Color.Red,
-            Color.LawnGreen,
+            Color.Black,
             Color.Blue,
             Color.Cyan,
             Color.Magenta,
