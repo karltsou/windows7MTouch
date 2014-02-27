@@ -78,6 +78,10 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
             // Add new stroke to the collection of strokes in drawing.
             ActiveStrokes.Add(newStroke);
+
+            // Log xy
+            richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
+            richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
         }
 
         // Touch up event handler.
@@ -116,6 +120,10 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // Partial redraw: only the last line segment
             Graphics g = this.CreateGraphics();
             stroke.DrawLast(g);
+
+            // Log xy
+            richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
+            richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
         }
 
         // OnPaint event handler.
@@ -146,9 +154,50 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             Graphics g = this.CreateGraphics();
             g.Clear(Color.White);
 
+            // Clears richtext
+            richTextBox1.Clear();
+
             // Remove strokes both finish and active
             FinishedStrokes.Clear();
             ActiveStrokes.Clear();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
+
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK
+                && saveFileDialog1.FileName.Length > 0)
+            {
+
+                richTextBox1.SaveFile(saveFileDialog1.FileName,
+                    RichTextBoxStreamType.PlainText);
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            richTextBox1.AppendText("TOP,LEFT\n");
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            richTextBox1.AppendText("TOP,RIGHT\n");
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+            richTextBox1.AppendText("BOTTOM,LEFT\n");
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+            richTextBox1.AppendText("BOTTOM,RIGHT\n");
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+            richTextBox1.AppendText("CENTER\n");
         }
 
     }
