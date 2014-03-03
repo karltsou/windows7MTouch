@@ -54,14 +54,14 @@
       <SubType>Designer</SubType>
       <DependentUpon>MTScratchpadWMTouch.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources.resx">
+    <EmbeddedResource Include="MTResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <LastGenOutput>MTResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Resources.Designer.cs">
+    <Compile Include="MTResources.Designer.cs">
       <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>MTResources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Settings.settings">

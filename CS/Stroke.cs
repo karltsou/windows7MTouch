@@ -177,9 +177,9 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         // Attributes
         private ArrayList strokes;          // the array of strokes
         // Boundary
-        public int topLeftX, topLeftY;
-        public int bottomLeftX, bottomLeftY;
-        public int topRightX, topRightY;
-        public int bottomRightX, bottomRightY;
+        public int tdTopLeftX, tdTopLeftY, tuTopLeftX, tuTopLeftY;
+        public int tdBottomLeftX, tdBottomLeftY, tuBottomLeftX, tuBottomLeftY;
+        public int tdTopRightX, tdTopRightY, tuTopRightX, tuTopRightY;
+        public int tdBottomRightX, tdBottomRightY, tuBottomRightX, tuBottomRightY;
     }
 }

@@ -84,10 +84,14 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
 
-            FinishedStrokes.topLeftX = e.LocationX;
-            FinishedStrokes.topLeftY = e.LocationY;
-            FinishedStrokes.topRightX = e.LocationX;
-            FinishedStrokes.topRightY = e.LocationY;
+            FinishedStrokes.tdTopLeftX = e.LocationX;
+            FinishedStrokes.tdTopLeftY = e.LocationY;
+            FinishedStrokes.tdTopRightX = e.LocationX;
+            FinishedStrokes.tdTopRightY = e.LocationY;
+            FinishedStrokes.tdBottomLeftX = e.LocationX;
+            FinishedStrokes.tdBottomLeftY = e.LocationY;
+            FinishedStrokes.tdBottomRightX = e.LocationX;
+            FinishedStrokes.tdBottomRightY = e.LocationY;
         }
 
         // Touch up event handler.
@@ -106,10 +110,17 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             FinishedStrokes.Add(stroke);
 
             label5.Text = "TOUCH UP";
-            FinishedStrokes.bottomLeftX = e.LocationX;
-            FinishedStrokes.bottomLeftY = e.LocationY;
-            FinishedStrokes.bottomRightX = e.LocationX;
-            FinishedStrokes.bottomRightY = e.LocationY;
+            richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
+            richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
+
+            FinishedStrokes.tuTopLeftX = e.LocationX;
+            FinishedStrokes.tuTopLeftY = e.LocationY;
+            FinishedStrokes.tuTopRightX = e.LocationX;
+            FinishedStrokes.tuTopRightY = e.LocationY;
+            FinishedStrokes.tuBottomLeftX = e.LocationX;
+            FinishedStrokes.tuBottomLeftY = e.LocationY;
+            FinishedStrokes.tuBottomRightX = e.LocationX;
+            FinishedStrokes.tuBottomRightY = e.LocationY;
 
             // Request full redraw.
             Invalidate();
@@ -150,36 +161,70 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             //FinishedStrokes.Draw(e.Graphics);
             //ActiveStrokes.Draw(e.Graphics);
 
-            if (FinishedStrokes.bottomRightX - FinishedStrokes.topLeftX >= 1300) {
-
-                if (FinishedStrokes.bottomRightY - FinishedStrokes.topLeftY >= 630)
+                // Top,left to Bottom,Right
+                if ((FinishedStrokes.tuBottomRightX - FinishedStrokes.tdTopLeftX >= 1300)
+                    &&(FinishedStrokes.tuBottomRightY - FinishedStrokes.tdTopLeftY >= 600))
                 {
-                    label5.Text = "TOUCH PASSED";
+
+                    FinishedStrokes.Draw(e.Graphics);
+                    label5.Text = "Drawing Path 1 to 3 Passed";
+
                 }
+
+                // top,right to bottom,left
+                else if ((FinishedStrokes.tdTopRightX - FinishedStrokes.tuBottomLeftX >= 1300)
+                         &&(FinishedStrokes.tuBottomLeftY - FinishedStrokes.tdTopRightY >= 600))
+                {
+
+                    FinishedStrokes.Draw(e.Graphics);
+                    label5.Text = "Drawing Path 2 to 4 Passed";
+                }
+
+                // Top,left to Top,right
+                else if ((FinishedStrokes.tuTopRightX - FinishedStrokes.tdTopLeftX >= 1300)
+                         && (FinishedStrokes.tuTopRightY <= 45))
+                {
+
+                    FinishedStrokes.Draw(e.Graphics);
+                    label5.Text = "Drawing Path 1 to 2 Passed";
+
+                }
+
+                // Top,right to Bottom,right
+                else if ((FinishedStrokes.tuBottomRightY - FinishedStrokes.tdTopRightY >= 600)
+                         && (FinishedStrokes.tuTopRightX >= 1330))
+                {
+
+                    FinishedStrokes.Draw(e.Graphics);
+                    label5.Text = "Drawing Path 2 to 3 Passed";
+
+                }
+
+                // Bottom,right to Bottom,left
+                else if ((FinishedStrokes.tdBottomRightX - FinishedStrokes.tuBottomLeftX >= 1300)
+                         && (FinishedStrokes.tuBottomLeftY >= 600))
+                {
+
+                    FinishedStrokes.Draw(e.Graphics);
+                    label5.Text = "Drawing Path 3 to 4 Passed";
+
+                }
+
+                // Top,left to Bottom,left
+                else if ((FinishedStrokes.tuBottomLeftY - FinishedStrokes.tdTopLeftY >= 600)
+                         && (FinishedStrokes.tuBottomLeftX <= 45))
+                {
+
+                    FinishedStrokes.Draw(e.Graphics);
+                    label5.Text = "Drawing Path 1 to 4 Passed";
+
+                }
+
                 else
                 {
-                    label5.Text = "TOUCH FAILED";
+                    FinishedStrokes.Clear();
+                    label5.Text = "Drawing Path Failed";
                 }
-
-            }
-
-            else if (FinishedStrokes.topRightX - FinishedStrokes.bottomLeftX >= 1300) {
-
-                if (FinishedStrokes.bottomLeftY - FinishedStrokes.topRightY >= 630)
-                {
-                    label5.Text = "TOUCH PASSED";
-                }
-                else
-                {
-                    label5.Text = "TOUCH FAILED";
-                }
-
-            }
-
-            else
-            {
-                label5.Text = "TOUCH FAILED";
-            }
 
         }
 
@@ -196,15 +241,15 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         {
             // Clears the entire drawing surface
             // and fills it with the specified background color.
-            Graphics g = this.CreateGraphics();
-            g.Clear(Color.White);
+            //Graphics g = this.CreateGraphics();
+            //g.Clear(Color.White);
 
             // Clears richtext
             richTextBox1.Clear();
 
             // Remove strokes both finish and active
             FinishedStrokes.Clear();
-            ActiveStrokes.Clear();
+            //ActiveStrokes.Clear();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -222,27 +267,27 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
         private void label1_Click(object sender, EventArgs e)
         {
-            //richTextBox1.AppendText("TOP,LEFT\n");
+            // Add action here
         }
 
         private void label2_Click(object sender, EventArgs e)
         {
-            //richTextBox1.AppendText("TOP,RIGHT\n");
+            // Add action here
         }
 
         private void label3_Click(object sender, EventArgs e)
         {
-            //richTextBox1.AppendText("BOTTOM,LEFT\n");
+            // Add action here
         }
 
         private void label4_Click(object sender, EventArgs e)
         {
-            //richTextBox1.AppendText("BOTTOM,RIGHT\n");
+            // Add action here
         }
 
         private void label5_Click(object sender, EventArgs e)
         {
-            //richTextBox1.AppendText("CENTER\n");
+            // Add action here
         }
 
     }

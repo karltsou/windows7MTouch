@@ -35,6 +35,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MTScratchpadWMTouchForm));
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -48,7 +49,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(47, 90);
+            this.button1.Location = new System.Drawing.Point(87, 237);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(80, 21);
             this.button1.TabIndex = 0;
@@ -61,22 +62,22 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(0, 8);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(56, 12);
+            this.label1.Size = new System.Drawing.Size(11, 12);
             this.label1.TabIndex = 1;
-            this.label1.Text = "TOP,LEFT";
+            this.label1.Text = "1";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(47, 116);
+            this.richTextBox1.Location = new System.Drawing.Point(87, 264);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(161, 326);
+            this.richTextBox1.Size = new System.Drawing.Size(161, 278);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(133, 90);
+            this.button2.Location = new System.Drawing.Point(173, 237);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 21);
             this.button2.TabIndex = 3;
@@ -88,33 +89,33 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(879, 8);
+            this.label2.Location = new System.Drawing.Point(930, -1);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(64, 12);
+            this.label2.Size = new System.Drawing.Size(11, 12);
             this.label2.TabIndex = 4;
-            this.label2.Text = "TOP,RIGHT";
+            this.label2.Text = "2";
             this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(0, 445);
+            this.label3.Location = new System.Drawing.Point(0, 530);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(83, 12);
+            this.label3.Size = new System.Drawing.Size(11, 12);
             this.label3.TabIndex = 5;
-            this.label3.Text = "BOTTOM,LEFT";
+            this.label3.Text = "4";
             this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(855, 445);
+            this.label4.Location = new System.Drawing.Point(930, 530);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(91, 12);
+            this.label4.Size = new System.Drawing.Size(11, 12);
             this.label4.TabIndex = 6;
-            this.label4.Text = "BOTTOM,RIGHT";
+            this.label4.Text = "3";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label5
@@ -123,7 +124,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(665, 305);
+            this.label5.Location = new System.Drawing.Point(643, 375);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 12);
             this.label5.TabIndex = 7;
@@ -134,7 +135,9 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(944, 465);
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(944, 580);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -146,6 +149,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             this.Cursor = System.Windows.Forms.Cursors.Cross;
             this.Name = "MTScratchpadWMTouchForm";
             this.Text = "ATMEL Touch Tester";
+            this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.ResumeLayout(false);
             this.PerformLayout();
