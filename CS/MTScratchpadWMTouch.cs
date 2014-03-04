@@ -79,11 +79,11 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // Add new stroke to the collection of strokes in drawing.
             ActiveStrokes.Add(newStroke);
 
-            // Log xy
+#if (DEBUG_XY)
             label5.Text = "TOUCH DOWN";
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
-
+#endif
             FinishedStrokes.tdTopLeftX = e.LocationX;
             FinishedStrokes.tdTopLeftY = e.LocationY;
             FinishedStrokes.tdTopRightX = e.LocationX;
@@ -108,11 +108,11 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
             // Add this stroke to the collection of finished strokes.
             FinishedStrokes.Add(stroke);
-
+#if (DEBUG_XY)
             label5.Text = "TOUCH UP";
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
-
+#endif
             FinishedStrokes.tuTopLeftX = e.LocationX;
             FinishedStrokes.tuTopLeftY = e.LocationY;
             FinishedStrokes.tuTopRightX = e.LocationX;
@@ -140,11 +140,11 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // Add contact point to the stroke
             stroke.Add(new Point(e.LocationX, e.LocationY));
 
-            // Log xy
+#if (DEBUG_XY)
             label5.Text = "TOUCH MOVING";
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
-
+#endif
             // Partial redraw: only the last line segment
             Graphics g = this.CreateGraphics();
             stroke.DrawLast(g);
@@ -168,6 +168,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
                     FinishedStrokes.Draw(e.Graphics);
                     label5.Text = "Drawing Path 1 to 3 Passed";
+                    richTextBox1.AppendText("Path 1 to 3 Passed\n");
 
                 }
 
@@ -178,6 +179,8 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
                     FinishedStrokes.Draw(e.Graphics);
                     label5.Text = "Drawing Path 2 to 4 Passed";
+                    richTextBox1.AppendText("Path 2 to 4 Passed\n");
+
                 }
 
                 // Top,left to Top,right
@@ -187,6 +190,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
                     FinishedStrokes.Draw(e.Graphics);
                     label5.Text = "Drawing Path 1 to 2 Passed";
+                    richTextBox1.AppendText("Path 1 to 2 Passed\n");
 
                 }
 
@@ -197,6 +201,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
                     FinishedStrokes.Draw(e.Graphics);
                     label5.Text = "Drawing Path 2 to 3 Passed";
+                    richTextBox1.AppendText("Path 2 to 3 Passed\n");
 
                 }
 
@@ -207,6 +212,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
                     FinishedStrokes.Draw(e.Graphics);
                     label5.Text = "Drawing Path 3 to 4 Passed";
+                    richTextBox1.AppendText("Path 3 to 4 Passed\n");
 
                 }
 
@@ -217,13 +223,17 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
                     FinishedStrokes.Draw(e.Graphics);
                     label5.Text = "Drawing Path 1 to 4 Passed";
+                    richTextBox1.AppendText("Path 1 to 4 Passed\n");
 
                 }
 
                 else
                 {
+
                     FinishedStrokes.Clear();
                     label5.Text = "Drawing Path Failed";
+                    richTextBox1.AppendText("Path Failed\n");
+
                 }
 
         }
