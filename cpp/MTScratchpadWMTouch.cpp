@@ -52,6 +52,42 @@ WCHAR g_wszWindowClass[MAX_LOADSTRING];         // The main window class name
 CStrokeCollection g_StrkColFinished;            // Finished strokes, the finger has been lifted
 CStrokeCollection g_StrkColDrawing;             // Strokes that are currently being drawn
 
+// Touch draw line
+#include <gdiplus.h>
+using namespace Gdiplus;
+#pragma comment (lib,"Gdiplus.lib")
+
+#define MAXPOINTS 10
+
+// You will use this array to track touch points
+int points[MAXPOINTS][2];
+
+// You will use this array to switch the color / track ids
+int idLookup[MAXPOINTS];
+
+
+// You can make the touch points larger
+// by changing this radius value
+static int radius = 50;
+
+// There should be at least as many colors
+// as there can be touch points so that you
+// can have different colors for each point
+COLORREF colors[] = { RGB(153, 255, 51),
+RGB(153, 0, 0),
+RGB(0, 153, 0),
+RGB(255, 255, 0),
+RGB(255, 51, 204),
+RGB(0, 0, 0),
+RGB(0, 153, 0),
+RGB(153, 255, 255),
+RGB(153, 153, 255),
+RGB(0, 51, 153)
+};
+
+VOID OnPaint(HDC hdc);
+int GetContactIndex(int dwID);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Drawing and WM_TOUCH helpers
 
@@ -219,9 +255,19 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 {
     MSG msg;
 
+    PAINTSTRUCT ps;
+    HDC hdc;
+
     // Initialize global strings
     LoadString(hInstance, IDS_APP_TITLE, g_wszTitle, MAX_LOADSTRING);
     LoadString(hInstance, IDC_MTSCRATCHPADWMTOUCH, g_wszWindowClass, MAX_LOADSTRING);
+
+    GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR           gdiplusToken;
+
+    // Initialize GDI+.
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
     MyRegisterClass(hInstance);
 
     // Perform application initialization
@@ -240,6 +286,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
         }
     }
 
+    GdiplusShutdown(gdiplusToken);
     return (int) msg.wParam;
 }
 
@@ -308,7 +355,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     }
     ASSERT(IsTouchWindow(hWnd, NULL));
 
-    ShowWindow(hWnd, nCmdShow);
+    ShowWindow(hWnd, SW_MAXIMIZE);
     UpdateWindow(hWnd);
 
     return TRUE;
@@ -334,6 +381,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     PAINTSTRUCT ps;
     HDC hdc;
 
+    UINT cInputs;
+    PTOUCHINPUT pInputs;
+    POINT ptInput;
+
+    // For double buffering
+    static HDC memDC = 0;
+    static HBITMAP hMemBmp = 0;
+    HBITMAP hOldBmp = 0;
+
+    // For drawing / fills
+    //PAINTSTRUCT ps;
+    //HDC hdc;
+
+    // For tracking dwId to points
+    int index, i, x, y;
+
     switch (message)
     {
         case WM_COMMAND:
@@ -350,51 +413,124 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
 
         case WM_PAINT:
-            hdc = BeginPaint(hWnd, &ps);
-            // Full redraw: draw complete collection of finished strokes and
-            // also all the strokes that are currently in drawing.
-            g_StrkColFinished.Draw(hdc);
-            g_StrkColDrawing.Draw(hdc);
-            EndPaint(hWnd, &ps);
+			hdc = BeginPaint(hWnd, &ps);
+			OnPaint(hdc);
+			EndPaint(hWnd, &ps);
+
+			//hdc = BeginPaint(hWnd, &ps);
+			RECT client;
+			GetClientRect(hWnd, &client);
+
+			// start double buffering
+			if (!memDC){
+				memDC = CreateCompatibleDC(hdc);
+			}
+			hMemBmp = CreateCompatibleBitmap(hdc, client.right, client.bottom);
+			hOldBmp = (HBITMAP)SelectObject(memDC, hMemBmp);
+
+			FillRect(memDC, &client, CreateSolidBrush(RGB(255, 255, 255)));
+
+			//Draw Touched Points
+			for (i = 0; i < MAXPOINTS; i++){
+				SelectObject(memDC, CreateSolidBrush(colors[i]));
+				x = points[i][0];
+				y = points[i][1];
+				if (x >0 && y>0){
+					Ellipse(memDC, x - radius, y - radius, x + radius, y + radius);
+				}
+			}
+
+			BitBlt(hdc, 0, 0, client.right, client.bottom, memDC, 0, 0, SRCCOPY);
+
+			EndPaint(hWnd, &ps);
+
+			//hdc = BeginPaint(hWnd, &ps);
+			//// Full redraw: draw complete collection of finished strokes and
+			//// also all the strokes that are currently in drawing.
+			g_StrkColFinished.Draw(hdc);
+			//g_StrkColDrawing.Draw(hdc);
+			EndPaint(hWnd, &ps);
+
             break;
 
         // WM_TOUCH message handlers
-        case WM_TOUCH:
-            {
-                // WM_TOUCH message can contain several messages from different contacts
-                // packed together.
-                // Message parameters need to be decoded:
-                unsigned int numInputs = (unsigned int) wParam; // Number of actual per-contact messages
-                TOUCHINPUT* ti = new TOUCHINPUT[numInputs]; // Allocate the storage for the parameters of the per-contact messages
-                if (ti == NULL)
-                {
-                    break;
-                }
-                // Unpack message parameters into the array of TOUCHINPUT structures, each
-                // representing a message for one single contact.
-                if (GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, ti, sizeof(TOUCHINPUT)))
-                {
-                    // For each contact, dispatch the message to the appropriate message
-                    // handler.
-                    for (unsigned int i = 0; i < numInputs; ++i)
-                    {
-                        if (ti[i].dwFlags & TOUCHEVENTF_DOWN)
-                        {
-                            OnTouchDownHandler(hWnd, ti[i]);
-                        }
-                        else if (ti[i].dwFlags & TOUCHEVENTF_MOVE)
-                        {
-                            OnTouchMoveHandler(hWnd, ti[i]);
-                        }
-                        else if (ti[i].dwFlags & TOUCHEVENTF_UP)
-                        {
-                            OnTouchUpHandler(hWnd, ti[i]);
-                        }
-                    }
-                }
-                CloseTouchInputHandle((HTOUCHINPUT)lParam);
-                delete [] ti;
-            }
+		case WM_TOUCH:
+			//// WM_TOUCH message can contain several messages from different contacts
+			//// packed together.
+			//// Message parameters need to be decoded:
+			//unsigned int numInputs = (unsigned int) wParam; // Number of actual per-contact messages
+			//TOUCHINPUT* ti = new TOUCHINPUT[numInputs]; // Allocate the storage for the parameters of the per-contact messages
+			//if (ti == NULL)
+			//{
+			//    break;
+			//}
+			//// Unpack message parameters into the array of TOUCHINPUT structures, each
+			//// representing a message for one single contact.
+			//if (GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, ti, sizeof(TOUCHINPUT)))
+			//{
+			//    // For each contact, dispatch the message to the appropriate message
+			//    // handler.
+			//    for (unsigned int i = 0; i < numInputs; ++i)
+			//    {
+			//        if (ti[i].dwFlags & TOUCHEVENTF_DOWN)
+			//        {
+			//            OnTouchDownHandler(hWnd, ti[i]);
+			//        }
+			//        else if (ti[i].dwFlags & TOUCHEVENTF_MOVE)
+			//        {
+			//            OnTouchMoveHandler(hWnd, ti[i]);
+			//        }
+			//        else if (ti[i].dwFlags & TOUCHEVENTF_UP)
+			//        {
+			//            OnTouchUpHandler(hWnd, ti[i]);
+			//        }
+			//    }
+			//}
+			//CloseTouchInputHandle((HTOUCHINPUT)lParam);
+			//delete [] ti;
+
+			cInputs = LOWORD(wParam);
+			pInputs = new TOUCHINPUT[cInputs];
+			if (pInputs)
+			{
+				if (GetTouchInputInfo((HTOUCHINPUT)lParam, cInputs, pInputs, sizeof(TOUCHINPUT)))
+				{
+					for (int i = 0; i < static_cast<INT>(cInputs); i++)
+					{
+						TOUCHINPUT ti = pInputs[i];
+						index = GetContactIndex(ti.dwID);
+
+						if (ti.dwID != 0 && index < MAXPOINTS)
+						{
+							//get screen corrdinates of touch
+							ptInput.x = TOUCH_COORD_TO_PIXEL(ti.x);
+							ptInput.y = TOUCH_COORD_TO_PIXEL(ti.y);
+
+							//get coordinates relative to the top left of the application window
+							ScreenToClient(hWnd, &ptInput);
+
+							if (ti.dwFlags & TOUCHEVENTF_UP)
+							{
+								points[index][0] = -1;
+								points[index][1] = -1;
+							}
+							else
+							{
+								points[index][0] = ptInput.x;
+								points[index][1] = ptInput.y;
+
+								//colletc moving storkes
+								if (ti.dwFlags & TOUCHEVENTF_MOVE) {
+									OnTouchMoveHandler(hWnd, pInputs[i]);
+								}
+							}
+						}
+					}
+				}
+				CloseTouchInputHandle((HTOUCHINPUT)lParam);
+				delete[] pInputs;
+			}
+			InvalidateRect(hWnd, NULL, FALSE);
             break;
 
         case WM_DESTROY:
@@ -404,6 +540,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 MessageBox(NULL, L"Cannot unregister application window for touch input", L"Error", MB_OK);
             }
             ASSERT(!IsTouchWindow(hWnd, NULL));
+
+			if (hMemBmp)
+				DeleteObject(hMemBmp);
+
+			if (memDC)
+				DeleteObject(memDC);
+
             // Destroy all the strokes
             {
                 int i;
@@ -423,4 +566,51 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
+}
+
+// This function is used to return an index given an ID
+int GetContactIndex(int dwID)
+{
+	for (int i = 0; i < MAXPOINTS; i++){
+		if (idLookup[i] == -1){
+			idLookup[i] = dwID;
+			return i;
+		}
+		else{
+			if (idLookup[i] == dwID){
+				return i;
+			}
+		}
+	}
+	// Out of contacts
+	return -1;
+}
+
+#define tlfx 40
+#define tlfy tlfx
+#define trhx tlfx * 35
+#define trhy tlfy
+#define factor 3
+#define brhx trhx
+#define brhy trhy * 20
+
+VOID OnPaint(HDC hdc)
+{
+	Graphics graphics(hdc);
+	Pen      pen(Color(255, 0, 0, 0));
+#if defined(BONDARY_TEST)
+	graphics.DrawLine(&pen, tlfx, tlfy, trhx, trhy);
+	graphics.DrawLine(&pen, tlfx, tlfy * factor, trhx, trhy * factor);
+
+	graphics.DrawLine(&pen, trhx, trhy, brhx, brhy);
+	graphics.DrawLine(&pen, trhx - 40 * (factor-1), trhy, trhx - 40 * (factor-1), brhy);
+
+	graphics.DrawLine(&pen, tlfx, tlfy, tlfx, trhy * 20);
+	graphics.DrawLine(&pen, tlfx * factor, tlfy, tlfx * factor, trhy * 20);
+
+	graphics.DrawLine(&pen, tlfx, tlfy * 20, tlfx * 35, trhy * 20);
+	graphics.DrawLine(&pen, tlfx, tlfy * 20 - 40 * (factor - 1), tlfx * 35, trhy * 20 - 40 * (factor - 1));
+#endif
+	graphics.DrawLine(&pen, tlfx, tlfy, brhx, brhy);
+	graphics.DrawLine(&pen, trhx, trhy, tlfx, trhy * 20);
 }
