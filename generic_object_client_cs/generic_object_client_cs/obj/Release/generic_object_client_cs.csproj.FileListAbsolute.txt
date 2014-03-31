@@ -1,0 +1,8 @@
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\bin\Release\generic_object_client_cs.exe
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\bin\Release\generic_object_client_cs.pdb
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\obj\Release\ResolveAssemblyReference.cache
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\obj\Release\generic_object_client_cs.FormMain.resources
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\obj\Release\generic_object_client_cs.Properties.Resources.resources
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\obj\Release\generic_object_client_cs.csproj.GenerateResource.Cache
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\obj\Release\generic_object_client_cs.exe
+C:\vault\PC Development\Client server demo apps\Observers\Generic client C#\generic_object_client_cs\generic_object_client_cs\obj\Release\generic_object_client_cs.pdb
