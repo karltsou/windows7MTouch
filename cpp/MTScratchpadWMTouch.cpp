@@ -57,7 +57,10 @@ CStrokeCollection g_StrkColDrawing;             // Strokes that are currently be
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
-#define MAXPOINTS 10
+#define MAXPOINTS 2
+
+#define COLOR_GREEN RGB(0, 255, 0)
+#define COLOR_RED   RGB(255, 0, 0)
 
 // You will use this array to track touch points
 int points[MAXPOINTS][2];
@@ -68,21 +71,14 @@ int idLookup[MAXPOINTS];
 
 // You can make the touch points larger
 // by changing this radius value
-static int radius = 50;
+static int radius = 30;
 
 // There should be at least as many colors
 // as there can be touch points so that you
 // can have different colors for each point
-COLORREF colors[] = { RGB(153, 255, 51),
-RGB(153, 0, 0),
-RGB(0, 153, 0),
-RGB(255, 255, 0),
-RGB(255, 51, 204),
-RGB(0, 0, 0),
-RGB(0, 153, 0),
-RGB(153, 255, 255),
-RGB(153, 153, 255),
-RGB(0, 51, 153)
+COLORREF colors[] = {
+    COLOR_RED,
+    COLOR_RED,
 };
 
 VOID OnPaint(HDC hdc);
@@ -355,6 +351,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     }
     ASSERT(IsTouchWindow(hWnd, NULL));
 
+    // the following code initializes the points
+    for (int i = 0; i< MAXPOINTS; i++){
+        points[i][0] = -1;
+        points[i][1] = -1;
+        idLookup[i] = -1;
+    }
+
     ShowWindow(hWnd, SW_MAXIMIZE);
     UpdateWindow(hWnd);
 
@@ -378,7 +381,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     int wmId;
-    PAINTSTRUCT ps;
+	PAINTSTRUCT ps;
     HDC hdc;
 
     UINT cInputs;
@@ -388,7 +391,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // For double buffering
     static HDC memDC = 0;
     static HBITMAP hMemBmp = 0;
-    HBITMAP hOldBmp = 0;
+    static HBITMAP hOldBmp = 0;
 
     // For drawing / fills
     //PAINTSTRUCT ps;
@@ -396,6 +399,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     // For tracking dwId to points
     int index, i, x, y;
+    //HBITMAP g_hbmBall = NULL;
 
     switch (message)
     {
@@ -413,15 +417,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
 
         case WM_PAINT:
-			hdc = BeginPaint(hWnd, &ps);
-			OnPaint(hdc);
-			EndPaint(hWnd, &ps);
 
 			//hdc = BeginPaint(hWnd, &ps);
+			//OnPaint(hdc);
+			//EndPaint(hWnd, &ps);
+
+			hdc = BeginPaint(hWnd, &ps);
 			RECT client;
 			GetClientRect(hWnd, &client);
 
-			// start double buffering
+			//// start double buffering
 			if (!memDC){
 				memDC = CreateCompatibleDC(hdc);
 			}
@@ -430,12 +435,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			FillRect(memDC, &client, CreateSolidBrush(RGB(255, 255, 255)));
 
-			//Draw Touched Points
-			for (i = 0; i < MAXPOINTS; i++){
+			////Draw Touched Points
+			for (i = 0; i < MAXPOINTS; i++) {
 				SelectObject(memDC, CreateSolidBrush(colors[i]));
 				x = points[i][0];
 				y = points[i][1];
-				if (x >0 && y>0){
+				if (x > 0 && y > 0 && x < 1500 && y < 800) {
 					Ellipse(memDC, x - radius, y - radius, x + radius, y + radius);
 				}
 			}
@@ -444,12 +449,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			EndPaint(hWnd, &ps);
 
+			DeleteObject(hMemBmp);
+			DeleteObject(hOldBmp);
+
+			//DeleteObject(memDC);
 			//hdc = BeginPaint(hWnd, &ps);
 			//// Full redraw: draw complete collection of finished strokes and
 			//// also all the strokes that are currently in drawing.
-			g_StrkColFinished.Draw(hdc);
+			//g_StrkColFinished.Draw(hdc);
 			//g_StrkColDrawing.Draw(hdc);
-			EndPaint(hWnd, &ps);
+			//EndPaint(hWnd, &ps);
 
             break;
 
@@ -502,6 +511,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 						if (ti.dwID != 0 && index < MAXPOINTS)
 						{
+
 							//get screen corrdinates of touch
 							ptInput.x = TOUCH_COORD_TO_PIXEL(ti.x);
 							ptInput.y = TOUCH_COORD_TO_PIXEL(ti.y);
@@ -509,6 +519,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 							//get coordinates relative to the top left of the application window
 							ScreenToClient(hWnd, &ptInput);
 
+							colors[1] = colors[0] = COLOR_RED;
 							if (ti.dwFlags & TOUCHEVENTF_UP)
 							{
 								points[index][0] = -1;
@@ -519,10 +530,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 								points[index][0] = ptInput.x;
 								points[index][1] = ptInput.y;
 
-								//colletc moving storkes
-								if (ti.dwFlags & TOUCHEVENTF_MOVE) {
-									OnTouchMoveHandler(hWnd, pInputs[i]);
+								if (ti.dwFlags & TOUCHEVENTF_MOVE)
+								{
+									if (points[index][0] >= 1350 || points[index][1] >= 750)
+									{
+										colors[1] = colors[0] = COLOR_GREEN;
+									}
 								}
+
 							}
 						}
 					}
@@ -530,6 +545,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				CloseTouchInputHandle((HTOUCHINPUT)lParam);
 				delete[] pInputs;
 			}
+
 			InvalidateRect(hWnd, NULL, FALSE);
             break;
 
@@ -541,24 +557,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             ASSERT(!IsTouchWindow(hWnd, NULL));
 
-			if (hMemBmp)
-				DeleteObject(hMemBmp);
-
 			if (memDC)
 				DeleteObject(memDC);
 
             // Destroy all the strokes
-            {
-                int i;
-                for (i = 0; i < g_StrkColDrawing.Count(); ++i)
-                {
-                    delete g_StrkColDrawing[i];
-                }
-                for (i = 0; i < g_StrkColFinished.Count(); ++i)
-                {
-                    delete g_StrkColFinished[i];
-                }
-            }
+            //{
+                //int i;
+                //for (i = 0; i < g_StrkColDrawing.Count(); ++i)
+                //{
+                //    delete g_StrkColDrawing[i];
+                //}
+                //for (i = 0; i < g_StrkColFinished.Count(); ++i)
+                //{
+                //    delete g_StrkColFinished[i];
+                //}
+            //}
             PostQuitMessage(0);
             break;
 
@@ -585,7 +598,7 @@ int GetContactIndex(int dwID)
 	// Out of contacts
 	return -1;
 }
-
+#define BONDARY_TEST
 #define tlfx 40
 #define tlfy tlfx
 #define trhx tlfx * 35
@@ -610,7 +623,8 @@ VOID OnPaint(HDC hdc)
 
 	graphics.DrawLine(&pen, tlfx, tlfy * 20, tlfx * 35, trhy * 20);
 	graphics.DrawLine(&pen, tlfx, tlfy * 20 - 40 * (factor - 1), tlfx * 35, trhy * 20 - 40 * (factor - 1));
-#endif
+#else
 	graphics.DrawLine(&pen, tlfx, tlfy, brhx, brhy);
 	graphics.DrawLine(&pen, trhx, trhy, tlfx, trhy * 20);
+#endif
 }
