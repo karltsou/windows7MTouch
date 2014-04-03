@@ -86,7 +86,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         private Color color;                    // the color of the stroke
         private int id;                         // stroke ID
 
-        private const float penWidth = 100.0f;    // pen width for drawing the stroke
+        private const float penWidth = 50.0f;   // pen width for drawing the stroke
     }
 
     // CollectionOfStrokes object represents a collection of the strokes.
@@ -176,10 +176,5 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
         // Attributes
         private ArrayList strokes;          // the array of strokes
-        // Boundary
-        public int tdTopLeftX, tdTopLeftY, tuTopLeftX, tuTopLeftY;
-        public int tdBottomLeftX, tdBottomLeftY, tuBottomLeftX, tuBottomLeftY;
-        public int tdTopRightX, tdTopRightY, tuTopRightX, tuTopRightY;
-        public int tdBottomRightX, tdBottomRightY, tuBottomRightX, tuBottomRightY;
     }
 }

@@ -60,7 +60,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 8);
+            this.label1.Location = new System.Drawing.Point(1, 1);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(11, 12);
             this.label1.TabIndex = 1;
@@ -89,7 +89,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(930, -1);
+            this.label2.Location = new System.Drawing.Point(930, 1);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(11, 12);
             this.label2.TabIndex = 4;
@@ -100,7 +100,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(0, 530);
+            this.label3.Location = new System.Drawing.Point(1, 567);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(11, 12);
             this.label3.TabIndex = 5;
@@ -111,7 +111,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(930, 530);
+            this.label4.Location = new System.Drawing.Point(931, 565);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(11, 12);
             this.label4.TabIndex = 6;
@@ -124,7 +124,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(643, 375);
+            this.label5.Location = new System.Drawing.Point(575, 375);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(36, 12);
             this.label5.TabIndex = 7;
@@ -147,8 +147,11 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
             this.Cursor = System.Windows.Forms.Cursors.Cross;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "MTScratchpadWMTouchForm";
-            this.Text = "ATMEL Touch Tester";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.Text = "maXTouch Touch Tester";
             this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.ResumeLayout(false);

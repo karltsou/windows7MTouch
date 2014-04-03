@@ -84,14 +84,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
 #endif
-            FinishedStrokes.tdTopLeftX = e.LocationX;
-            FinishedStrokes.tdTopLeftY = e.LocationY;
-            FinishedStrokes.tdTopRightX = e.LocationX;
-            FinishedStrokes.tdTopRightY = e.LocationY;
-            FinishedStrokes.tdBottomLeftX = e.LocationX;
-            FinishedStrokes.tdBottomLeftY = e.LocationY;
-            FinishedStrokes.tdBottomRightX = e.LocationX;
-            FinishedStrokes.tdBottomRightY = e.LocationY;
+            BoundaryCheck(1, e);
         }
 
         // Touch up event handler.
@@ -113,14 +106,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
 #endif
-            FinishedStrokes.tuTopLeftX = e.LocationX;
-            FinishedStrokes.tuTopLeftY = e.LocationY;
-            FinishedStrokes.tuTopRightX = e.LocationX;
-            FinishedStrokes.tuTopRightY = e.LocationY;
-            FinishedStrokes.tuBottomLeftX = e.LocationX;
-            FinishedStrokes.tuBottomLeftY = e.LocationY;
-            FinishedStrokes.tuBottomRightX = e.LocationX;
-            FinishedStrokes.tuBottomRightY = e.LocationY;
+            BoundaryCheck(0, e);
 
             // Request full redraw.
             Invalidate();
@@ -158,84 +144,8 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         {
             // Full redraw: draw complete collection of finished strokes and
             // also all the strokes that are currently in drawing.
-            //FinishedStrokes.Draw(e.Graphics);
+            FinishedStrokes.Draw(e.Graphics);
             //ActiveStrokes.Draw(e.Graphics);
-
-                // Top,left to Bottom,Right
-                if ((FinishedStrokes.tuBottomRightX - FinishedStrokes.tdTopLeftX >= 1300)
-                    &&(FinishedStrokes.tuBottomRightY - FinishedStrokes.tdTopLeftY >= 600))
-                {
-
-                    FinishedStrokes.Draw(e.Graphics);
-                    label5.Text = "Drawing Path 1 to 3 Passed";
-                    richTextBox1.AppendText("Path 1 to 3 Passed\n");
-
-                }
-
-                // top,right to bottom,left
-                else if ((FinishedStrokes.tdTopRightX - FinishedStrokes.tuBottomLeftX >= 1300)
-                         &&(FinishedStrokes.tuBottomLeftY - FinishedStrokes.tdTopRightY >= 600))
-                {
-
-                    FinishedStrokes.Draw(e.Graphics);
-                    label5.Text = "Drawing Path 2 to 4 Passed";
-                    richTextBox1.AppendText("Path 2 to 4 Passed\n");
-
-                }
-
-                // Top,left to Top,right
-                else if ((FinishedStrokes.tuTopRightX - FinishedStrokes.tdTopLeftX >= 1300)
-                         && (FinishedStrokes.tuTopRightY <= 45))
-                {
-
-                    FinishedStrokes.Draw(e.Graphics);
-                    label5.Text = "Drawing Path 1 to 2 Passed";
-                    richTextBox1.AppendText("Path 1 to 2 Passed\n");
-
-                }
-
-                // Top,right to Bottom,right
-                else if ((FinishedStrokes.tuBottomRightY - FinishedStrokes.tdTopRightY >= 600)
-                         && (FinishedStrokes.tuTopRightX >= 1330))
-                {
-
-                    FinishedStrokes.Draw(e.Graphics);
-                    label5.Text = "Drawing Path 2 to 3 Passed";
-                    richTextBox1.AppendText("Path 2 to 3 Passed\n");
-
-                }
-
-                // Bottom,right to Bottom,left
-                else if ((FinishedStrokes.tdBottomRightX - FinishedStrokes.tuBottomLeftX >= 1300)
-                         && (FinishedStrokes.tuBottomLeftY >= 600))
-                {
-
-                    FinishedStrokes.Draw(e.Graphics);
-                    label5.Text = "Drawing Path 3 to 4 Passed";
-                    richTextBox1.AppendText("Path 3 to 4 Passed\n");
-
-                }
-
-                // Top,left to Bottom,left
-                else if ((FinishedStrokes.tuBottomLeftY - FinishedStrokes.tdTopLeftY >= 600)
-                         && (FinishedStrokes.tuBottomLeftX <= 45))
-                {
-
-                    FinishedStrokes.Draw(e.Graphics);
-                    label5.Text = "Drawing Path 1 to 4 Passed";
-                    richTextBox1.AppendText("Path 1 to 4 Passed\n");
-
-                }
-
-                else
-                {
-
-                    FinishedStrokes.Clear();
-                    label5.Text = "Drawing Path Failed";
-                    richTextBox1.AppendText("Path Failed\n");
-
-                }
-
         }
 
         // Attributes
@@ -298,6 +208,82 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         private void label5_Click(object sender, EventArgs e)
         {
             // Add action here
+        }
+
+        static int x0, x1;
+        static int y0, y1;
+        static int passflag;
+
+        private void BoundaryCheck(int down, WMTouchEventArgs e)
+        {
+
+            if (down == 1)
+            {
+                x0 = e.LocationX;
+                y0 = e.LocationY;
+            }
+
+            else
+            {
+                x1 = e.LocationX;
+                y1 = e.LocationY;
+
+                if ((x1 - x0) >= 1350 && (y0 <= 50 && y1 <= 50))
+                {
+                    label5.Text = "Drawing Path 1 to 2 Passed";
+                    richTextBox1.AppendText("Path 1 to 2 Passed\n");
+                    passflag++;
+                }
+
+                else if ((x1 - x0) >= 1350 && (y1 - y0) >= 800)
+                {
+                    label5.Text = "Drawing Path 1 to 3 Passed";
+                    richTextBox1.AppendText("Path 1 to 3 Passed\n");
+                    passflag++;
+                }
+
+                else if ((y1 - y0) >= 800 && (x0 <= 50 && x1 <= 50))
+                {
+                    label5.Text = "Drawing Path 1 to 4 Passed";
+                    richTextBox1.AppendText("Path 1 to 4 Passed\n");
+                    passflag++;
+                }
+
+                else if ((x1 - x0) >= 1350 && (y0 >=800 && y1 >= 800))
+                {
+                    label5.Text = "Drawing Path 4 to 3 Passed";
+                    richTextBox1.AppendText("Path 4 to 3 Passed\n");
+                    passflag++;
+                }
+
+                else if ((x1 - x0) >= 1350 && (y1 - y0) <= -800)
+                {
+                    label5.Text = "Drawing Path 4 to 2 Passed";
+                    richTextBox1.AppendText("Path 4 to 2 Passed\n");
+                    passflag++;
+                }
+
+                else if ((y1 - y0) >= 800 && (x0 >= 1350 && x1 >= 1350))
+                {
+                    label5.Text = "Drawing Path 2 to 3 Passed";
+                    richTextBox1.AppendText("Path 2 to 3 Passed\n");
+                    passflag++;
+                }
+
+                else
+                {
+                    FinishedStrokes.Clear();
+                    passflag = 0;
+
+                }
+            }
+
+            /// All test cases are passed.
+            /// Exit itself
+            if (passflag == 6)
+            {
+               Environment.Exit(0);
+            }
         }
 
     }
