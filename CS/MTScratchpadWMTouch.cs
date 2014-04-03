@@ -285,6 +285,22 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
                Environment.Exit(0);
             }
         }
+        /// <summary>
+        /// Key event handle
+        /// Use escape to exit itself
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                this.Close();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
 
     }
 
