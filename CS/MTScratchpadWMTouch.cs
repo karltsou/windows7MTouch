@@ -79,11 +79,11 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
             // Add new stroke to the collection of strokes in drawing.
             ActiveStrokes.Add(newStroke);
 
-#if (DEBUG_XY)
+//#if (DEBUG_XY)
             label5.Text = "TOUCH DOWN";
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
-#endif
+//#endif
             BoundaryCheck(1, e);
         }
 
@@ -101,11 +101,11 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
 
             // Add this stroke to the collection of finished strokes.
             FinishedStrokes.Add(stroke);
-#if (DEBUG_XY)
+//#if (DEBUG_XY)
             label5.Text = "TOUCH UP";
             richTextBox1.AppendText("x: " + e.LocationX.ToString() + " ");
             richTextBox1.AppendText("y: " + e.LocationY.ToString() + "\n");
-#endif
+//#endif
             BoundaryCheck(0, e);
 
             // Request full redraw.
@@ -213,6 +213,9 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
         static int x0, x1;
         static int y0, y1;
         static int passflag;
+        int boundary_min= 55;
+        int boundary_x = 1300;
+        int boundary_y = 700;
 
         private void BoundaryCheck(int down, WMTouchEventArgs e)
         {
@@ -228,42 +231,42 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
                 x1 = e.LocationX;
                 y1 = e.LocationY;
 
-                if ((x1 - x0) >= 1350 && (y0 <= 50 && y1 <= 50))
+                if ((x1 - x0) >= boundary_x && (y0 <= boundary_min && y1 <= boundary_min))
                 {
                     label5.Text = "Drawing Path 1 to 2 Passed";
                     richTextBox1.AppendText("Path 1 to 2 Passed\n");
                     passflag++;
                 }
 
-                else if ((x1 - x0) >= 1350 && (y1 - y0) >= 800)
+                else if ((x1 - x0) >= boundary_x && (y1 - y0) >= boundary_y)
                 {
                     label5.Text = "Drawing Path 1 to 3 Passed";
                     richTextBox1.AppendText("Path 1 to 3 Passed\n");
                     passflag++;
                 }
 
-                else if ((y1 - y0) >= 800 && (x0 <= 50 && x1 <= 50))
+                else if ((y1 - y0) >= boundary_y && (x0 <= boundary_min && x1 <= boundary_min))
                 {
                     label5.Text = "Drawing Path 1 to 4 Passed";
                     richTextBox1.AppendText("Path 1 to 4 Passed\n");
                     passflag++;
                 }
 
-                else if ((x1 - x0) >= 1350 && (y0 >=800 && y1 >= 800))
+                else if ((x1 - x0) >= boundary_x && (y0 >= boundary_y && y1 >= boundary_y))
                 {
                     label5.Text = "Drawing Path 4 to 3 Passed";
                     richTextBox1.AppendText("Path 4 to 3 Passed\n");
                     passflag++;
                 }
 
-                else if ((x1 - x0) >= 1350 && (y1 - y0) <= -800)
+                else if ((x1 - x0) >= boundary_x && (y1 - y0) <= -boundary_y)
                 {
                     label5.Text = "Drawing Path 4 to 2 Passed";
                     richTextBox1.AppendText("Path 4 to 2 Passed\n");
                     passflag++;
                 }
 
-                else if ((y1 - y0) >= 800 && (x0 >= 1350 && x1 >= 1350))
+                else if ((y1 - y0) >= boundary_y && (x0 >= boundary_x && x1 >= boundary_x))
                 {
                     label5.Text = "Drawing Path 2 to 3 Passed";
                     richTextBox1.AppendText("Path 2 to 3 Passed\n");
@@ -273,7 +276,7 @@ namespace Microsoft.Samples.Touch.MTScratchpadWMTouch
                 else
                 {
                     FinishedStrokes.Clear();
-                    passflag = 0;
+                    //passflag = 0;
 
                 }
             }
