@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
+    <Compile Include="maXTouch.cs" />
     <Compile Include="Stroke.cs" />
     <Compile Include="Form.cs">
       <SubType>Form</SubType>
@@ -121,6 +122,15 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wall.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wall1.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\wall2.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -40,11 +40,11 @@ namespace maXTouch.ObjClinet
             // 
             // textBoxInfo
             // 
-            this.textBoxInfo.Location = new System.Drawing.Point(8, 8);
+            this.textBoxInfo.Location = new System.Drawing.Point(300, 21);
             this.textBoxInfo.Multiline = true;
             this.textBoxInfo.Name = "textBoxInfo";
             this.textBoxInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxInfo.Size = new System.Drawing.Size(265, 582);
+            this.textBoxInfo.Size = new System.Drawing.Size(329, 134);
             this.textBoxInfo.TabIndex = 3;
             // 
             // timerClientPing
@@ -55,13 +55,17 @@ namespace maXTouch.ObjClinet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.BackgroundImage = global::maXTouch.ObjClinet.Properties.Resources.wall2;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(909, 554);
             this.Controls.Add(this.textBoxInfo);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormMain";
             this.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
             this.Text = "maXTouch";
-            this.Load += new System.EventHandler(this.FormMain_Load);
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
+            this.Load += new System.EventHandler(this.FormMain_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

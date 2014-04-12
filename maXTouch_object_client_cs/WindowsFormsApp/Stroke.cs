@@ -95,7 +95,7 @@ namespace maXTouch.ObjClinet
         private Color color;                    // the color of the stroke
         private int id;                         // stroke ID
 
-        private const float penWidth = 50.0f;   // pen width for drawing the stroke
+        private const float penWidth = 40.0f;   // pen width for drawing the stroke
     }
 
     /// <summary>

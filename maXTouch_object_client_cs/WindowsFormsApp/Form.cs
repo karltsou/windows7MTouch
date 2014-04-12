@@ -43,6 +43,23 @@ namespace maXTouch.ObjClinet
         private CollectionOfStrokes ActiveStrokes;      // Collection of active strokes, currently being drawn by the user
 
         /// <summary>
+        /// Touch object message
+        /// </summary>
+        private Touch touch;
+
+        /// <summary>
+        /// Toucch object events
+        /// </summary>
+        private const int TOUCH_MOVE = 1;
+        private const int TOUCH_DOWN = 4;
+        private const int TOUCH_UP = 5;
+
+        /// <summary>
+        /// Debug Message
+        /// </summary>
+        private Boolean DEBUG = true;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FormMain" /> class.
         /// </summary>
         public FormMain()
@@ -55,8 +72,6 @@ namespace maXTouch.ObjClinet
             ActiveStrokes = new CollectionOfStrokes();
             FinishedStrokes = new CollectionOfStrokes();
 
-            // Setup handlers
-            Paint += new PaintEventHandler(this.OnPaintHandler);
         }
 
         /// <summary>
@@ -99,25 +114,11 @@ namespace maXTouch.ObjClinet
             this.Text += " (C#) v";
             this.Text += Application.ProductVersion;
 
-            // configure GUI
-            //this.SetChipControlsEnabled(false);
-            //this.SetObjectControlsEnabled(false);
-            //this.SetServerControlsEnabled(false);
-            //this.SetChipDebugControlsEnabled(false);
-
             // configure client comms handler
             this.client = new Client();
             this.client.chipAttach += new Client.chipAttachDelegate(this.Client_chipAttach);
-            //this.client.chipDebugData += new Client.chipDebugDataDelegate(this.Client_chipDebugData);
-            //this.client.chipDebugDataStartConfirm += new Client.chipDebugDataStartConfirmDelegate(this.Client_chipDebugDataStartConfirm);
-            //this.client.chipDebugDataStopConfirm += new Client.chipDebugDataStopConfirmDelegate(this.Client_chipDebugDataStopConfirm);
             this.client.chipDetach += new Client.chipDetachDelegate(this.Client_chipDetach);
-            //this.client.chipLoadConfigConfirm += new Client.chipLoadConfigConfirmDelegate(this.Client_chipLoadConfigConfirm);
-            //this.client.chipObjectTable += new Client.chipObjectTableDelegate(this.Client_chipObjectTable);
-            //this.client.chipSaveConfigConfirm += new Client.chipSaveConfigConfirmDelegate(this.Client_chipSaveConfigConfirm);
             this.client.objectConfig += new Client.objectConfigDelegate(this.Client_objectConfig);
-            //this.client.objectInvalidMessageRegisterConfirm += new Client.objectInvalidMessageRegisterConfirmDelegate(this.Client_objectInvalidMessageRegisterConfirm);
-            //this.client.objectInvalidMessageUnregisterConfirm += new Client.objectInvalidMessageUnregisterConfirmDelegate(this.Client_objectInvalidMessageUnregisterConfirm);
             this.client.objectMessage += new Client.objectMessageDelegate(this.Client_objectMessage);
             this.client.serverConnectionInfo += new Client.serverConnectionInfoDelegate(this.Client_serverConnectionInfo);
             this.client.serverInfo += new Client.serverInfoDelegate(this.Client_serverInfo);
@@ -127,6 +128,9 @@ namespace maXTouch.ObjClinet
             // configure timer to send client ping messages
             this.timerClientPing.Interval = 100;
             this.timerClientPing.Enabled = true;
+
+            // touch object message
+            this.touch = new Touch();
         }
 
         /// <summary>
@@ -186,11 +190,7 @@ namespace maXTouch.ObjClinet
             this.textBoxInfo.AppendText(buffer[6].ToString());
             this.textBoxInfo.AppendText(Environment.NewLine);
 
-            // configure GUI
-            //this.SetChipControlsEnabled(true);
-            //this.SetObjectControlsEnabled(true);
-            //this.SetChipDebugControlsEnabled(true);
-        }
+            }
 
         /// <summary>
         /// Handler for client receiving a chip detach message.
@@ -212,15 +212,8 @@ namespace maXTouch.ObjClinet
         /// <param name="data">object message contents</param>
         private void Client_objectMessage(ref byte[] data)
         {
-            this.textBoxInfo.AppendText("object message: ");
-            int bufferSize = data.Length;
-            for (int i = 0; i <= bufferSize - 1; i++)
-            {
-                this.textBoxInfo.AppendText(BitConverter.ToString(data, i, 1));
-                this.textBoxInfo.AppendText(" ");
-            }
 
-            this.textBoxInfo.AppendText(Environment.NewLine);
+            DecodeObjMessage(ref data);
         }
 
         /// <summary>
@@ -299,11 +292,6 @@ namespace maXTouch.ObjClinet
             // server has detached, so start pinging again to find a new one
             this.timerClientPing.Enabled = true;
 
-            // configure GUI
-            //this.SetServerControlsEnabled(false);
-            //this.SetChipDebugControlsEnabled(false);
-            //this.SetChipControlsEnabled(false);
-            //this.SetObjectControlsEnabled(false);
         }
 
         /// <summary>
@@ -370,17 +358,195 @@ namespace maXTouch.ObjClinet
             this.appIsShuttingDown = true;
         }
 
-        // OnPaint event handler.
-        // in:
-        //      sender      object that has sent the event
-        //      e           paint event arguments
-        private void OnPaintHandler(object sender, PaintEventArgs e)
+        /// <summary>
+        /// decode object message
+        /// </summary>
+        private void DecodeObjMessage(ref byte[] data)
         {
-            // Full redraw: draw complete collection of finished strokes and
-            // also all the strokes that are currently in drawing.
-            //FinishedStrokes.Draw(e.Graphics);
-            //ActiveStrokes.Draw(e.Graphics);
+            // fill-in object message
+            this.touch.filldata(ref data);
 
+            // object valid id start from 41
+            // so that ignore unsed id 39
+            if (this.touch.get_id > this.touch.skip_id)
+            {
+
+                bool IsPrimaryContact = ((this.touch.get_id & 0x01) == 1);
+                int id = this.touch.get_id;
+
+                // ratio equal to
+                // maximum touch pad resolution % display resolution
+                int x = (this.touch.get_x / 3);
+                int y = (this.touch.get_y / 5);
+                int LocationX;
+                int LocationY;
+
+                // touch point coordinates and contact size is in of a pixel; convert it to pixels.
+                // Also convert screen to client coordinates.
+                Point pt = PointToClient(new Point(x, y));
+                LocationX = pt.X;
+                LocationY = pt.Y;
+
+                switch (this.touch.get_event)
+                {
+                    case TOUCH_MOVE:
+                        {
+                            // Find the stroke in the collection of the strokes in drawing.
+                            Stroke stroke = ActiveStrokes.Get(id);
+
+                            // Add contact point to the stroke
+                            stroke.Add(new Point(LocationX, LocationY));
+
+                            // Partial redraw: only the last line segment
+                            Graphics g = this.CreateGraphics();
+                            stroke.DrawLast(g);
+                        }
+                        break;
+                    case TOUCH_DOWN:
+                        {
+                            // Create new stroke, add point and assign a color to it.
+                            Stroke newStroke = new Stroke();
+                            newStroke.Color = touchColor.GetColor(IsPrimaryContact);
+                            newStroke.Id = id;
+
+                            // Add new stroke to the collection of strokes in drawing.
+                            ActiveStrokes.Add(newStroke);
+
+                            DebugLocationXY(id, "d", LocationX, LocationY);
+
+                            BoundaryCheck(id, 1, LocationX, LocationY);
+                        }
+                        break;
+                    case TOUCH_UP:
+                        {
+                            // Find the stroke in the collection of the strokes in drawing
+                            // and remove it from this collection.
+                            Stroke stroke = ActiveStrokes.Remove(id);
+
+                            // Add this stroke to the collection of finished strokes.
+                            FinishedStrokes.Add(stroke);
+
+                            // Request full redraw.
+                            Invalidate();
+
+                            DebugLocationXY(id, "u", LocationX, LocationY);
+
+                            BoundaryCheck(id, 0, LocationX, LocationY);
+                        }
+                        break;
+                }
+            }
+        }
+
+        static int x0, x1;
+        static int y0, y1;
+        static int passflag;
+        int boundary_min = 100;
+        int boundary_x = 1200;
+        int boundary_y = 600;
+
+        private void BoundaryCheck(int id, int flag, int x, int y)
+        {
+            // for secondry finger we are not checking bondary.
+            if (id != 41)
+                return;
+
+            if (flag == 1)
+            {
+                x0 = x;
+                y0 = y;
+            }
+
+            else
+            {
+                x1 = x;
+                y1 = y;
+
+                if ((x1 - x0) >= boundary_x && (y0 <= boundary_min && y1 <= boundary_min))
+                {
+
+                    DebugLocationXY(id, "Path 1 to 2 Passed", 0, 0);
+                    passflag++;
+
+                }
+
+                else if ((y1 - y0) >= boundary_y && (x0 >= boundary_x && x1 >= boundary_x))
+                {
+
+                    DebugLocationXY(id, "Path 2 to 3 Passed", 0, 0);
+                    passflag++;
+
+                }
+
+                else if ((x1 - x0) <= -boundary_x && (y0 >= boundary_y && y1 >= boundary_y))
+                {
+
+                    DebugLocationXY(id, "Path 3 to 4 Passed", 0, 0);
+                    passflag++;
+                }
+
+                if ((x1 - x0) >= boundary_x && (y1 - y0) >= boundary_y)
+                {
+
+                    DebugLocationXY(id, "Path 1 to 3 Passed", 0, 0);
+                    passflag++;
+                }
+
+                else if ((y1 - y0) <= -boundary_y && (x0 <= boundary_min && x1 <= boundary_min))
+                {
+
+                    DebugLocationXY(id, "Path 4 to 1 Passed", 0, 0);
+                    passflag++;
+                }
+
+                else if ((x1 - x0) <= -boundary_x && (y1 - y0) >= boundary_y)
+                {
+
+                    DebugLocationXY(id, "Path 2 to 4 Passed", 0, 0);
+                    passflag++;
+                }
+
+                else
+                {
+                    //FinishedStrokes.Clear();
+                    //passflag = 0;
+
+                }
+            }
+
+            // test cases pass criteria
+            // close program
+            if (passflag == 6)
+            {
+                Environment.Exit(0);
+            }
+        }
+
+        private void DebugLocationXY(int id, string events, int x, int y)
+        {
+            if (DEBUG)
+            {
+                this.textBoxInfo.AppendText("t " + id.ToString() + " ");
+                this.textBoxInfo.AppendText(events + " ( " + x + "," + y + " ) ");
+                this.textBoxInfo.AppendText("\n");
+            }
+        }
+
+        /// <summary>
+        /// Key event handle
+        /// Use escape to exit itself
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                this.Close();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
     }
