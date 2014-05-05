@@ -53,6 +53,9 @@ namespace maXTouch.ObjClinet
         private const int TOUCH_MOVE = 1;
         private const int TOUCH_DOWN = 4;
         private const int TOUCH_UP = 5;
+        private const int T9_TOUCH_DOWN = 0x40;
+        private const int T9_TOUCH_MOVE = 0x10;
+        private const int T9_TOUCH_UP = 0x20;
 
         /// <summary>
         /// Debug Message
@@ -321,8 +324,11 @@ namespace maXTouch.ObjClinet
             string productVersion = "v" + Application.ProductVersion;
             this.client.sendClientAttach(productName, productVersion);
 
-            // initially regist T100 object message
+            // initially register T100 object message
             this.client.sendObjectRegister((int)100);
+
+            // initially register T9 object message
+            this.client.sendObjectRegister((int)9);
 
             // configure GUI
             //this.SetServerControlsEnabled(true);
@@ -366,8 +372,79 @@ namespace maXTouch.ObjClinet
             // fill-in object message
             this.touch.filldata(ref data);
 
-            // object valid id start from 41
-            // so that ignore unsed id 39
+            // Object T9 valid id start from 3
+            if (this.touch.get_id >= 3)
+            {
+                bool IsPrimaryContact = ((this.touch.get_id & 0x03) == 1);
+                int id = this.touch.get_id;
+
+                // ratio equal to
+                // maximum touch pad resolution % display resolution
+                // 1365 * 767
+                int x = (this.touch.get_t9_x);
+                int y = (this.touch.get_t9_y / 4);
+                int LocationX;
+                int LocationY;
+
+                // touch point coordinates and contact size is in of a pixel; convert it to pixels.
+                // Also convert screen to client coordinates.
+                Point pt = PointToClient(new Point(x, y));
+                LocationX = pt.X;
+                LocationY = pt.Y;
+
+                switch (this.touch.get_t9_event)
+                {
+                    case T9_TOUCH_MOVE:
+                        {
+                            // Find the stroke in the collection of the strokes in drawing.
+                            Stroke stroke = ActiveStrokes.Get(id);
+
+                            // Add contact point to the stroke
+                            stroke.Add(new Point(LocationX, LocationY));
+
+                            // Partial redraw: only the last line segment
+                            Graphics g = this.CreateGraphics();
+                            stroke.DrawLast(g);
+                        }
+                        break;
+                    case T9_TOUCH_DOWN:
+                        {
+                            // Create new stroke, add point and assign a color to it.
+                            Stroke newStroke = new Stroke();
+                            newStroke.Color = touchColor.GetColor(IsPrimaryContact);
+                            newStroke.Id = id;
+
+                            // Add new stroke to the collection of strokes in drawing.
+                            ActiveStrokes.Add(newStroke);
+
+                            DebugLocationXY(id, "d", LocationX, LocationY);
+
+                            BoundaryCheck(id, 1, LocationX, LocationY);
+                        }
+                        break;
+                    case T9_TOUCH_UP:
+                        {
+                            // Find the stroke in the collection of the strokes in drawing
+                            // and remove it from this collection.
+                            Stroke stroke = ActiveStrokes.Remove(id);
+
+                            // Add this stroke to the collection of finished strokes.
+                            FinishedStrokes.Add(stroke);
+
+                            // Request full redraw.
+                            Invalidate();
+
+                            DebugLocationXY(id, "u", LocationX, LocationY);
+
+                            BoundaryCheck(id, 0, LocationX, LocationY);
+                        }
+                        break;
+                }
+
+            }
+
+            // Object T100 valid id start from 41
+            // Skip id 39 not used
             if (this.touch.get_id > this.touch.skip_id)
             {
 
@@ -436,6 +513,7 @@ namespace maXTouch.ObjClinet
                         break;
                 }
             }
+
         }
 
         static int x0, x1;

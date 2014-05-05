@@ -124,7 +124,7 @@ namespace maXTouch.ObjClinet
         public TouchData data;
 
         /// <summary>
-        /// unused id
+        /// skip id
         /// </summary>
         public byte skip_id = 39;
         /// <summary>
@@ -138,7 +138,6 @@ namespace maXTouch.ObjClinet
         /// <returns></returns>
         public byte get_id
         {
-            //data.id = data.objmsg[0];
             get { return data.objmsg[0]; }
         }
 
@@ -148,7 +147,6 @@ namespace maXTouch.ObjClinet
         /// <returns></returns>
         public byte get_event
         {
-            //data.touchevent = data.objmsg[1];
             get { return (byte)(data.objmsg[1] & 0x0f); }
         }
         
@@ -158,7 +156,6 @@ namespace maXTouch.ObjClinet
         /// <returns></returns>
         public byte get_type
         {
-            //data.touchevent = data.objdata[1];
             get { return (byte)((data.objmsg[1] >> 4) & (byte)(EventTypes.EVENT_DETECT | EventTypes.EVENT_FINGER)); }            
         }
         
@@ -168,8 +165,6 @@ namespace maXTouch.ObjClinet
         /// <returns></returns>
         public short get_x
         {
-            //data.xLoByte = data.objdata[2];
-            //data.xHiByte = data.objdata[3];
             get { return (short)((data.objmsg[3] << 8) | data.objmsg[2]); }
         }
 
@@ -179,9 +174,23 @@ namespace maXTouch.ObjClinet
         /// <returns></returns>
         public short get_y
         {
-            //data.yLoByte = data.objdata[4];
-            //data.yHiByte = data.objdata[5];
             get { return (short)((data.objmsg[5] << 8) | data.objmsg[4]); }
+        }
+
+        public byte get_t9_event
+        {
+            get { return (byte)(data.objmsg[1] & 0x7f); }
+        }
+
+        public short get_t9_x
+        {
+
+            get { return (short)((data.objmsg[2] << 4) | (data.objmsg[4] >> 4)); }
+        }
+
+        public short get_t9_y
+        {
+            get { return (short)((data.objmsg[3]) << 4 | (data.objmsg[4] & 0x0f)); }
         }
 
         /// <summary>
