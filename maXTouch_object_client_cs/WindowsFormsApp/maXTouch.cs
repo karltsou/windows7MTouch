@@ -190,7 +190,7 @@ namespace maXTouch.ObjClinet
 
         public short get_t9_y
         {
-            get { return (short)((data.objmsg[3]) << 4 | (data.objmsg[4] & 0x0f)); }
+            get { return (short)((data.objmsg[3]) << 2 | (data.objmsg[4] & 0x0c) >> 2); }
         }
 
         /// <summary>

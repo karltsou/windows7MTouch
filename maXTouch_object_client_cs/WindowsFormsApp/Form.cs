@@ -61,6 +61,7 @@ namespace maXTouch.ObjClinet
         /// Debug Message
         /// </summary>
         private Boolean DEBUG = true;
+        private Boolean BOUNDARYTEST = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormMain" /> class.
@@ -365,28 +366,26 @@ namespace maXTouch.ObjClinet
         }
 
         /// <summary>
-        /// decode object message
+        /// Decode object message
         /// </summary>
         private void DecodeObjMessage(ref byte[] data)
         {
-            // fill-in object message
+            // Fill-in object message
             this.touch.filldata(ref data);
 
-            // Object T9 valid id start from 3
-            if (this.touch.get_id >= 3)
+            // Object T9 messge valid id number equal and large 3
+            if (this.touch.get_id >= 3 && this.touch.get_id < this.touch.skip_id)
             {
                 bool IsPrimaryContact = ((this.touch.get_id & 0x03) == 1);
                 int id = this.touch.get_id;
 
-                // ratio equal to
-                // maximum touch pad resolution % display resolution
-                // 1365 * 767
+                // Touch pad coordination get back
                 int x = (this.touch.get_t9_x);
-                int y = (this.touch.get_t9_y / 4);
+                int y = (this.touch.get_t9_y);
                 int LocationX;
                 int LocationY;
 
-                // touch point coordinates and contact size is in of a pixel; convert it to pixels.
+                // Touch point coordinates and contact size is in of a pixel; convert it to pixels.
                 // Also convert screen to client coordinates.
                 Point pt = PointToClient(new Point(x, y));
                 LocationX = pt.X;
@@ -443,7 +442,7 @@ namespace maXTouch.ObjClinet
 
             }
 
-            // Object T100 valid id start from 41
+            // Object T100 valid id number equal and large 41
             // Skip id 39 not used
             if (this.touch.get_id > this.touch.skip_id)
             {
@@ -525,7 +524,7 @@ namespace maXTouch.ObjClinet
 
         private void BoundaryCheck(int id, int flag, int x, int y)
         {
-            // for secondry finger we are not checking bondary.
+            // Secondry finger bondary checked skip.
             if (id != 41)
                 return;
 
@@ -540,61 +539,68 @@ namespace maXTouch.ObjClinet
                 x1 = x;
                 y1 = y;
 
-                if ((x1 - x0) >= boundary_x && (y0 <= boundary_min && y1 <= boundary_min))
+                if (BOUNDARYTEST)
                 {
+                    if ((x1 - x0) >= boundary_x && (y0 <= boundary_min && y1 <= boundary_min))
+                    {
 
-                    DebugLocationXY(id, "Path 1 to 2 Passed", 0, 0);
-                    passflag++;
+                        DebugLocationXY(id, "Path 1 to 2 Passed", 0, 0);
+                        passflag++;
 
+                    }
+
+                    else if ((y1 - y0) >= boundary_y && (x0 >= boundary_x && x1 >= boundary_x))
+                    {
+
+                        DebugLocationXY(id, "Path 2 to 3 Passed", 0, 0);
+                        passflag++;
+
+                    }
+
+                    else if ((x1 - x0) <= -boundary_x && (y0 >= boundary_y && y1 >= boundary_y))
+                    {
+
+                        DebugLocationXY(id, "Path 3 to 4 Passed", 0, 0);
+                        passflag++;
+                    }
+
+                    else if ((y1 - y0) <= -boundary_y && (x0 <= boundary_min && x1 <= boundary_min))
+                    {
+
+                        DebugLocationXY(id, "Path 4 to 1 Passed", 0, 0);
+                        passflag++;
+                    }
                 }
-
-                else if ((y1 - y0) >= boundary_y && (x0 >= boundary_x && x1 >= boundary_x))
-                {
-
-                    DebugLocationXY(id, "Path 2 to 3 Passed", 0, 0);
-                    passflag++;
-
-                }
-
-                else if ((x1 - x0) <= -boundary_x && (y0 >= boundary_y && y1 >= boundary_y))
-                {
-
-                    DebugLocationXY(id, "Path 3 to 4 Passed", 0, 0);
-                    passflag++;
-                }
-
-                if ((x1 - x0) >= boundary_x && (y1 - y0) >= boundary_y)
-                {
-
-                    DebugLocationXY(id, "Path 1 to 3 Passed", 0, 0);
-                    passflag++;
-                }
-
-                else if ((y1 - y0) <= -boundary_y && (x0 <= boundary_min && x1 <= boundary_min))
-                {
-
-                    DebugLocationXY(id, "Path 4 to 1 Passed", 0, 0);
-                    passflag++;
-                }
-
-                else if ((x1 - x0) <= -boundary_x && (y1 - y0) >= boundary_y)
-                {
-
-                    DebugLocationXY(id, "Path 2 to 4 Passed", 0, 0);
-                    passflag++;
-                }
-
                 else
                 {
-                    //FinishedStrokes.Clear();
-                    //passflag = 0;
+                    // Diagonal line test case
+                    if ((x1 - x0) >= boundary_x && (y1 - y0) >= boundary_y)
+                    {
 
+                        DebugLocationXY(id, "Path 1 to 3 Passed", 0, 0);
+                        passflag++;
+                    }
+
+                    else if ((x1 - x0) <= -boundary_x && (y1 - y0) >= boundary_y)
+                    {
+
+                        DebugLocationXY(id, "Path 2 to 4 Passed", 0, 0);
+                        passflag++;
+                    }
+
+                    else
+                    {
+
+                        //FinishedStrokes.Clear();
+                        //passflag = 0;
+
+                    }
                 }
             }
 
-            // test cases pass criteria
-            // close program
-            if (passflag == 6)
+            // Test cases passed criteria
+            // Exit program if all test case has verified
+            if (passflag == ((BOUNDARYTEST) ?4 :2))
             {
                 Environment.Exit(0);
             }
