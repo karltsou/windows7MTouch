@@ -63,9 +63,9 @@ namespace maXTouch.ObjClinet.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap wall {
+        internal static System.Drawing.Bitmap bk_1024x638 {
             get {
-                object obj = ResourceManager.GetObject("wall", resourceCulture);
+                object obj = ResourceManager.GetObject("bk-1024x638", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace maXTouch.ObjClinet.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap wall1 {
+        internal static System.Drawing.Bitmap bk2_1024x638 {
             get {
-                object obj = ResourceManager.GetObject("wall1", resourceCulture);
+                object obj = ResourceManager.GetObject("bk2-1024x638", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,19 @@ namespace maXTouch.ObjClinet.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap wall2 {
+        internal static System.Drawing.Bitmap bk3_1024x638 {
             get {
-                object obj = ResourceManager.GetObject("wall2", resourceCulture);
+                object obj = ResourceManager.GetObject("bk3-1024x638", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap bk4_1024x638 {
+            get {
+                object obj = ResourceManager.GetObject("bk4-1024x638", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

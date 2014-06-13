@@ -60,8 +60,8 @@ namespace maXTouch.ObjClinet
         /// <summary>
         /// Debug Message
         /// </summary>
-        private Boolean DEBUG = true;
-        private Boolean BOUNDARYTEST = false;
+        private Boolean DEBUG = false;
+        private Boolean BOUNDARYTEST = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormMain" /> class.
@@ -450,16 +450,22 @@ namespace maXTouch.ObjClinet
                 bool IsPrimaryContact = ((this.touch.get_id & 0x01) == 1);
                 int id = this.touch.get_id;
 
-                // ratio equal to
-                // maximum touch pad resolution % display resolution
-                int x = (this.touch.get_x / 3);
-                int y = (this.touch.get_y / 5);
+                // The minimum and maximun values of the absolutely coordination
+                // define the bounds of the activate area of the device in device-specific surface.
+                int minX = 25; // ABS min x
+                int minY = 25; // ABS min y
+                int maxX = 4090; // ABS max x
+                int maxY = 4025; // ABS max y
+                int displayWidth = 1024; // display resolution x
+                int displayHeight = 638; // dayplay resolution y
+                int displayX = ((this.touch.get_x) - minX) * displayWidth / (maxX - minX + 1);
+                int displayY = ((this.touch.get_y) - minY) * displayHeight / (maxY - minY + 1);
                 int LocationX;
                 int LocationY;
 
                 // touch point coordinates and contact size is in of a pixel; convert it to pixels.
                 // Also convert screen to client coordinates.
-                Point pt = PointToClient(new Point(x, y));
+                Point pt = PointToClient(new Point(displayX, displayY));
                 LocationX = pt.X;
                 LocationY = pt.Y;
 
@@ -488,7 +494,7 @@ namespace maXTouch.ObjClinet
                             // Add new stroke to the collection of strokes in drawing.
                             ActiveStrokes.Add(newStroke);
 
-                            DebugLocationXY(id, "d", LocationX, LocationY);
+                            //DebugLocationXY(id, "d", LocationX, LocationY);
 
                             BoundaryCheck(id, 1, LocationX, LocationY);
                         }
@@ -502,12 +508,13 @@ namespace maXTouch.ObjClinet
                             // Add this stroke to the collection of finished strokes.
                             FinishedStrokes.Add(stroke);
 
-                            // Request full redraw.
-                            Invalidate();
+                            //DebugLocationXY(id, "u", LocationX, LocationY);
 
-                            DebugLocationXY(id, "u", LocationX, LocationY);
+                            if (false == BoundaryCheck(id, 0, LocationX, LocationY)) {
 
-                            BoundaryCheck(id, 0, LocationX, LocationY);
+                                // Request full redraw.
+                                Invalidate();
+                            }
                         }
                         break;
                 }
@@ -517,16 +524,18 @@ namespace maXTouch.ObjClinet
 
         static int x0, x1;
         static int y0, y1;
-        static int passflag;
-        int boundary_min = 100;
-        int boundary_x = 1200;
-        int boundary_y = 600;
+        int boundary_min = 80;
+        int boundary_x = 990;
+        int boundary_y = 590;
+        static byte passflag = 0x00;
 
-        private void BoundaryCheck(int id, int flag, int x, int y)
+        private bool BoundaryCheck(int id, int flag, int x, int y)
         {
-            // Secondry finger bondary checked skip.
+            bool result = false;
+
+            // Skip secondry boundary checked.
             if (id != 41)
-                return;
+                return true;
 
             if (flag == 1)
             {
@@ -538,79 +547,93 @@ namespace maXTouch.ObjClinet
             {
                 x1 = x;
                 y1 = y;
-
+                  
                 if (BOUNDARYTEST)
                 {
+
                     if ((x1 - x0) >= boundary_x && (y0 <= boundary_min && y1 <= boundary_min))
                     {
 
-                        DebugLocationXY(id, "Path 1 to 2 Passed", 0, 0);
-                        passflag++;
-
+                        DebugLocationXY(id, "Path 1 Passed", 0, 0);
+                        result = true;
+                        passflag |= 0x01;
                     }
 
-                    else if ((y1 - y0) >= boundary_y && (x0 >= boundary_x && x1 >= boundary_x))
+                    else if ((y1 - y0) >= boundary_y && (x0 <= boundary_x && x1 <= boundary_x))
                     {
 
-                        DebugLocationXY(id, "Path 2 to 3 Passed", 0, 0);
-                        passflag++;
-
+                        DebugLocationXY(id, "Path 2 Passed", 0, 0);
+                        result = true;
+                        passflag |= 0x02;
                     }
 
-                    else if ((x1 - x0) <= -boundary_x && (y0 >= boundary_y && y1 >= boundary_y))
+                    else if ((x1 - x0) <= -boundary_x && (y0 <= boundary_y && y1 <= boundary_y))
                     {
 
-                        DebugLocationXY(id, "Path 3 to 4 Passed", 0, 0);
-                        passflag++;
+                        DebugLocationXY(id, "Path 3 Passed", 0, 0);
+                        result = true;
+                        passflag |= 0x04;
                     }
 
                     else if ((y1 - y0) <= -boundary_y && (x0 <= boundary_min && x1 <= boundary_min))
                     {
 
-                        DebugLocationXY(id, "Path 4 to 1 Passed", 0, 0);
-                        passflag++;
+                        DebugLocationXY(id, "Path 4 Passed", 0, 0);
+                        result = true;
+                        passflag |= 0x08;
+                    }
+                    else
+                    {
+                        passflag = 0x00;
                     }
                 }
                 else
                 {
-                    // Diagonal line test case
+                    // Diagonal test case
                     if ((x1 - x0) >= boundary_x && (y1 - y0) >= boundary_y)
                     {
 
-                        DebugLocationXY(id, "Path 1 to 3 Passed", 0, 0);
-                        passflag++;
+                        DebugLocationXY(id, "Path 1 Passed", 0, 0);
+                        result = true;
+                        passflag |= 0x10;
                     }
 
                     else if ((x1 - x0) <= -boundary_x && (y1 - y0) >= boundary_y)
                     {
 
-                        DebugLocationXY(id, "Path 2 to 4 Passed", 0, 0);
-                        passflag++;
+                        DebugLocationXY(id, "Path 2 Passed", 0, 0);
+                        result = true;
+                        passflag |= 0x20;
                     }
 
                     else
                     {
 
                         //FinishedStrokes.Clear();
-                        //passflag = 0;
+                        passflag = 0x00;
 
                     }
                 }
+
             }
 
             // Test cases passed criteria
             // Exit program if all test case has verified
-            if (passflag == ((BOUNDARYTEST) ?4 :2))
+            if (passflag == ((BOUNDARYTEST) ?0x0F :0x30))
             {
                 Environment.Exit(0);
             }
+
+            return result;
         }
 
         private void DebugLocationXY(int id, string events, int x, int y)
-        {
+        {   
+            this.textBoxInfo.AppendText(events + " " + "\n");
+
             if (DEBUG)
             {
-                this.textBoxInfo.AppendText("t " + id.ToString() + " ");
+                this.textBoxInfo.AppendText("t " + id.ToString() + " "); 
                 this.textBoxInfo.AppendText(events + " ( " + x + "," + y + " ) ");
                 this.textBoxInfo.AppendText("\n");
             }
@@ -667,7 +690,7 @@ namespace maXTouch.ObjClinet
                 Color color = secondaryColors[idx];
 
                 // Move to the next color in the array.
-                idx = (idx + 1) % secondaryColors.Length;
+                // idx = (idx + 1) % secondaryColors.Length;
 
                 return color;
             }
@@ -678,6 +701,7 @@ namespace maXTouch.ObjClinet
         /// </summary>
         static private Color[] secondaryColors =    // Secondary colors
         {
+            Color.LawnGreen,
             Color.Red,
             Color.Black,
             Color.Blue,

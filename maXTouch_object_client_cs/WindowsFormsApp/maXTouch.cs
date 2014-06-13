@@ -176,18 +176,24 @@ namespace maXTouch.ObjClinet
         {
             get { return (short)((data.objmsg[5] << 8) | data.objmsg[4]); }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public byte get_t9_event
         {
             get { return (byte)(data.objmsg[1] & 0x7f); }
         }
-
+        /// <summary>
+        ///
+        /// </summary>
         public short get_t9_x
         {
 
             get { return (short)((data.objmsg[2] << 4) | (data.objmsg[4] >> 4)); }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public short get_t9_y
         {
             get { return (short)((data.objmsg[3]) << 2 | (data.objmsg[4] & 0x0c) >> 2); }

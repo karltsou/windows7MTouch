@@ -40,11 +40,13 @@ namespace maXTouch.ObjClinet
             // 
             // textBoxInfo
             // 
-            this.textBoxInfo.Location = new System.Drawing.Point(300, 21);
+            this.textBoxInfo.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxInfo.ForeColor = System.Drawing.Color.SpringGreen;
+            this.textBoxInfo.Location = new System.Drawing.Point(199, 221);
             this.textBoxInfo.Multiline = true;
             this.textBoxInfo.Name = "textBoxInfo";
             this.textBoxInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxInfo.Size = new System.Drawing.Size(329, 134);
+            this.textBoxInfo.Size = new System.Drawing.Size(329, 185);
             this.textBoxInfo.TabIndex = 3;
             // 
             // timerClientPing
@@ -55,15 +57,16 @@ namespace maXTouch.ObjClinet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::maXTouch.ObjClinet.Properties.Resources.wall2;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(909, 554);
+            this.BackgroundImage = global::maXTouch.ObjClinet.Properties.Resources.bk3_1024x638;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ClientSize = new System.Drawing.Size(1024, 638);
             this.Controls.Add(this.textBoxInfo);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormMain";
             this.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "maXTouch";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.ResumeLayout(false);
