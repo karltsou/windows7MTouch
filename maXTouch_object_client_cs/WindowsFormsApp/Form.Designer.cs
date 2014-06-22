@@ -36,13 +36,14 @@ namespace maXTouch.ObjClinet
             this.components = new System.ComponentModel.Container();
             this.textBoxInfo = new System.Windows.Forms.TextBox();
             this.timerClientPing = new System.Windows.Forms.Timer(this.components);
+            this.timerTimeOut = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // textBoxInfo
             // 
             this.textBoxInfo.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxInfo.ForeColor = System.Drawing.Color.SpringGreen;
-            this.textBoxInfo.Location = new System.Drawing.Point(199, 221);
+            this.textBoxInfo.Location = new System.Drawing.Point(200, 200);
             this.textBoxInfo.Multiline = true;
             this.textBoxInfo.Name = "textBoxInfo";
             this.textBoxInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -52,6 +53,10 @@ namespace maXTouch.ObjClinet
             // timerClientPing
             // 
             this.timerClientPing.Tick += new System.EventHandler(this.TimerClientPing_Tick);
+            // 
+            // timerTimeOut
+            // 
+            this.timerTimeOut.Tick += new System.EventHandler(this.TimerTimeOut_Tick);
             // 
             // FormMain
             // 
@@ -78,6 +83,7 @@ namespace maXTouch.ObjClinet
 
         private System.Windows.Forms.TextBox textBoxInfo;
         private System.Windows.Forms.Timer timerClientPing;
+        private System.Windows.Forms.Timer timerTimeOut;
     }
 }
 

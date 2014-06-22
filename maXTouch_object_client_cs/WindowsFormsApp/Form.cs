@@ -46,6 +46,7 @@ namespace maXTouch.ObjClinet
         /// Touch object message
         /// </summary>
         private Touch touch;
+        private static byte counter = 0;
 
         /// <summary>
         /// Toucch object events
@@ -62,6 +63,7 @@ namespace maXTouch.ObjClinet
         /// </summary>
         private Boolean DEBUG = false;
         private Boolean BOUNDARYTEST = true;
+        private byte timeout = 30;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormMain" /> class.
@@ -76,6 +78,9 @@ namespace maXTouch.ObjClinet
             ActiveStrokes = new CollectionOfStrokes();
             FinishedStrokes = new CollectionOfStrokes();
 
+            if (BOUNDARYTEST) {
+                timeout = 60;
+            }
         }
 
         /// <summary>
@@ -133,8 +138,13 @@ namespace maXTouch.ObjClinet
             this.timerClientPing.Interval = 100;
             this.timerClientPing.Enabled = true;
 
+            // time out
+            this.timerTimeOut.Interval = 1000;
+            this.timerTimeOut.Enabled = true;
+
             // touch object message
             this.touch = new Touch();
+
         }
 
         /// <summary>
@@ -348,6 +358,16 @@ namespace maXTouch.ObjClinet
         private void TimerClientPing_Tick(object sender, EventArgs e)
         {
             this.client.sendClientPing((int)Handle);
+        }
+
+
+        private void TimerTimeOut_Tick(object sender, EventArgs e)
+        {
+            ++counter;
+            this.textBoxInfo.AppendText("time elapsed " + counter + "\n");
+
+            if (counter > timeout)
+                this.Close();
         }
 
         /// <summary>
