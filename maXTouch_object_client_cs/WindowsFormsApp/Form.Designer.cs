@@ -36,7 +36,7 @@ namespace maXTouch.ObjClinet
             this.components = new System.ComponentModel.Container();
             this.textBoxInfo = new System.Windows.Forms.TextBox();
             this.timerClientPing = new System.Windows.Forms.Timer(this.components);
-            this.timerTimeOut = new System.Windows.Forms.Timer(this.components);
+            this.timerTimeOut = new System.Windows.Forms.Timer(this.components); 
             this.SuspendLayout();
             // 
             // textBoxInfo

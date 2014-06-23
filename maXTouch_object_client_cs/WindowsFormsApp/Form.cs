@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace maXTouch.ObjClinet
 {
@@ -366,8 +367,18 @@ namespace maXTouch.ObjClinet
             ++counter;
             this.textBoxInfo.AppendText("time elapsed " + counter + "\n");
 
-            if (counter > timeout)
-                this.Close();
+            if (counter >= timeout) {
+
+                string perUserAppData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                string path = Path.Combine(perUserAppData, @"draw-test-result.txt");
+
+                string text = "FAIL " + "draw test";
+                // WriteAllText creates a file, writes the specified string to the file, 
+                // and then closes the file.
+                System.IO.File.WriteAllText(path, text);
+
+                this.Close(); 
+            }
         }
 
         /// <summary>
@@ -628,10 +639,7 @@ namespace maXTouch.ObjClinet
 
                     else
                     {
-
-                        //FinishedStrokes.Clear();
                         passflag = 0x00;
-
                     }
                 }
 
@@ -641,6 +649,14 @@ namespace maXTouch.ObjClinet
             // Exit program if all test case has verified
             if (passflag == ((BOUNDARYTEST) ?0x0F :0x30))
             {
+                string perUserAppData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                string path = Path.Combine(perUserAppData, @"draw-test-result.txt");
+
+                string text = "PASS " + "draw test";
+                // WriteAllText creates a file, writes the specified string to the file, 
+                // and then closes the file.
+                System.IO.File.WriteAllText(path, text);
+
                 Environment.Exit(0);
             }
 
