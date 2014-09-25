@@ -63,7 +63,7 @@ namespace maXTouch.ObjClinet
         /// Debug Message
         /// </summary>
         private Boolean DEBUG = false;
-        private Boolean BOUNDARYTEST = true;
+        private Boolean BOUNDARYTEST = false;
         private byte timeout = 30;
 
         /// <summary>
@@ -483,12 +483,12 @@ namespace maXTouch.ObjClinet
 
                 // The minimum and maximun values of the absolutely coordination
                 // define the bounds of the activate area of the device in device-specific surface.
-                int minX = 25; // ABS min x
-                int minY = 25; // ABS min y
-                int maxX = 4090; // ABS max x
-                int maxY = 4025; // ABS max y
-                int displayWidth = 1024; // display resolution x
-                int displayHeight = 638; // dayplay resolution y
+                int minX = 0;    // ABS min x
+                int minY = 0;    // ABS min y
+                int maxX = 1365; // ABS max x
+                int maxY = 767;  // ABS max y
+                int displayWidth = 1024; // target resolution x
+                int displayHeight = 638; // target resolution y
                 int displayX = ((this.touch.get_x) - minX) * displayWidth / (maxX - minX + 1);
                 int displayY = ((this.touch.get_y) - minY) * displayHeight / (maxY - minY + 1);
                 int LocationX;
@@ -613,10 +613,7 @@ namespace maXTouch.ObjClinet
                         result = true;
                         passflag |= 0x08;
                     }
-                    else
-                    {
-                        passflag = 0x00;
-                    }
+
                 }
                 else
                 {
@@ -637,10 +634,6 @@ namespace maXTouch.ObjClinet
                         passflag |= 0x20;
                     }
 
-                    else
-                    {
-                        passflag = 0x00;
-                    }
                 }
 
             }
